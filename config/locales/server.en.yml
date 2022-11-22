@@ -1,1 +1,5 @@
 en:
+  site_settings:
+    cdn_experiment_enabled: "Enable the discourse-cdn-experiment plugin"
+    cdn_experiment_s3_cdns: "Pipe-separated additional S3 CDN domains. Include protocol. No trailing slash. Must match the number of app_cdns."
+    cdn_experiment_app_cdns: "Pipe-separated additional CDN domains. Include protocol. No trailing slash. Must match the number of s3_cdns."

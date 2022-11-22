@@ -1,4 +1,9 @@
 plugins:
-  plugin_name_enabled:
-    default: true
-    client: true
+  cdn_experiment_enabled:
+    default: false
+  cdn_experiment_s3_cdns:
+    default: ""
+    type: list
+  cdn_experiment_app_cdns:
+    default: ""
+    type: list

@@ -1,5 +1,3 @@
-# **Plugin Name** Plugin
+# CDN Experiment
 
-**Plugin Summary**
-
-For more information, please see: **url to meta topic**
+Allows multiple CDNs to be specified (e.g. for A/B performance tests)

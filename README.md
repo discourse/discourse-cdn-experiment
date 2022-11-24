@@ -11,7 +11,7 @@ environments is untested and may lead to unexpected behaviour.
 You must specify an equal number of S3 CDNs and App CDNs. CDNs will always be handed out in pairs (i.e. if the second S3 CDN is
 used, the second App CDN will also be used).
 
-### Configuration:
+### Configuration
 
 The plugin is disabled-by-default. It is configured using site settings (which, as normal, can be overridden for an entire cluster using
 environment variables).

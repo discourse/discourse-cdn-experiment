@@ -34,12 +34,15 @@ module ::CdnExperiment
   end
 
   def self.current_cdn_index(env)
-    env[ENV_KEY] ||= pick_new_cdn_index
+    env[ENV_KEY] ||= pick_new_cdn_index(env)
   end
 
-  def self.pick_new_cdn_index
+  def self.pick_new_cdn_index(env)
+    request = Rack::Request.new(env)
+    client_ip_integer = IPAddr.new(request.ip).to_i
+    seeded_random = Random.new(client_ip_integer)
     min_array_length = [app_cdn_urls.length, s3_cdn_urls.length].min
-    rand(0...min_array_length)
+    seeded_random.rand(0...min_array_length)
   end
 
   def self.app_cdn_urls

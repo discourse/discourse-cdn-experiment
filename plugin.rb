@@ -10,6 +10,7 @@ enabled_site_setting :cdn_experiment_enabled
 
 module ::CdnExperiment
   ENV_KEY = "discourse-cdn-experiment-cdn-index"
+  PARAM_NAME = "_cdn_index"
 
   def self.perform_gsub(value, env)
     if value.is_a? String
@@ -34,15 +35,27 @@ module ::CdnExperiment
   end
 
   def self.current_cdn_index(env)
-    env[ENV_KEY] ||= pick_new_cdn_index(env)
+    env[ENV_KEY] ||= begin
+      request = Rack::Request.new(env)
+      index_from_params(request) || index_from_ip(request)
+    end
   end
 
-  def self.pick_new_cdn_index(env)
-    request = Rack::Request.new(env)
+  def self.index_from_params(request)
+    if param = request.params[PARAM_NAME]
+      index = param.to_i
+      index if index >= 0 && index <= max_index
+    end
+  end
+
+  def self.index_from_ip(request)
     client_ip_integer = IPAddr.new(request.ip).to_i
     seeded_random = Random.new(client_ip_integer)
-    min_array_length = [app_cdn_urls.length, s3_cdn_urls.length].min
-    seeded_random.rand(0...min_array_length)
+    seeded_random.rand(0..max_index)
+  end
+
+  def self.max_index
+    [app_cdn_urls.length, s3_cdn_urls.length].min - 1
   end
 
   def self.app_cdn_urls
@@ -93,5 +106,9 @@ after_initialize do
         [*entries, *additional_entries]
       end
     end
+  end
+
+  register_anonymous_cache_key :cdnindex do
+    ::CdnExperiment.current_cdn_index(@env)
   end
 end

@@ -5,6 +5,9 @@ calculated using a function of their IP address (i.e. a given user will see a co
 the [discourse-client-performance](https://github.com/discourse/discourse-client-performance) plugin, this can be used to
 measure differences in CDN performance.
 
+For debugging, you can add something like `?_cdn_index=1` to the URL, where `1` is the (zero-based) index of the CDN you'd like the page
+to be rendered with.
+
 This plugin is designed for use on Discourse environments with both an 's3 cdn' and an 'app cdns'. Using this plugin in other
 environments is untested and may lead to unexpected behaviour.
 

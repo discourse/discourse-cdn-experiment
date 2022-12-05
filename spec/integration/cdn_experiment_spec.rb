@@ -29,9 +29,28 @@ describe "CDN Experiment" do
     expect(discourse_js["src"]).to match(/(original|new)-s3-cdn.example.com/)
   end
 
+  it "picks cdn based on index parameter" do
+    get "/?_cdn_index=0"
+    doc = Nokogiri::HTML5(response.body)
+    discourse_js = doc.at_css('head script[src*="discourse.js"]')
+    expect(discourse_js["src"]).to match(/original-s3-cdn.example.com/)
+
+    get "/?_cdn_index=1"
+    doc = Nokogiri::HTML5(response.body)
+    discourse_js = doc.at_css('head script[src*="discourse.js"]')
+    expect(discourse_js["src"]).to match(/new-s3-cdn.example.com/)
+  end
+
+  it "picks a random cdn based on ipv6 address" do
+    get "/", env: { "REMOTE_ADDR" => "1:2:3:4:5:6:7:8" }
+    doc = Nokogiri::HTML5(response.body)
+    discourse_js = doc.at_css('head script[src*="discourse.js"]')
+    expect(discourse_js["src"]).to match(/(original|new)-s3-cdn.example.com/)
+  end
+
   context "with random generator stubbed" do
     before do
-      CdnExperiment.stubs(:pick_new_cdn_index).returns(0, 1) # Sequential, not random
+      CdnExperiment.stubs(:index_from_ip).returns(0, 1) # Sequential, not random
     end
 
     it "alternates CDNs for static JS assets" do

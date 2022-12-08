@@ -21,8 +21,8 @@ environment variables).
 
 - **cdn experiment enabled** (`DISCOURSE_CDN_EXPERIMENT_ENABLED`) (default `false`): Set 'true' to enable the plugin.
 
-- **cdn experiment s3 cdns** (`DISCOURSE_CDN_S3_CDNS`) (default empty): Pipe-separated additional S3 CDN domains. Include protocol. No trailing slash.
+- **cdn experiment s3 cdns** (`DISCOURSE_CDN_EXPERIMENT_S3_CDNS`) (default empty): Pipe-separated additional S3 CDN domains. Include protocol. No trailing slash.
 
-- **cdn experiment app cdns** (`DISCOURSE_CDN_APP_CDNS`) (default empty): Pipe-separated additional App CDN domains. Include protocol. No trailing slash.
+- **cdn experiment app cdns** (`DISCOURSE_CDN_EXPERIMENT_APP_CDNS`) (default empty): Pipe-separated additional App CDN domains. Include protocol. No trailing slash.
 
 The CDNs configured via the Discourse core settings are always included in the experiment - you do not need to add them to this plugin's configuration.

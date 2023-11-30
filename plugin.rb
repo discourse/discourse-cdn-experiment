@@ -5,6 +5,7 @@
 # version: 1.0
 # authors: Discourse
 # url: https://github.com/discourse/discourse-cdn-experiment
+# label: experiment
 
 enabled_site_setting :cdn_experiment_enabled
 

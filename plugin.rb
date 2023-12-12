@@ -71,16 +71,16 @@ end
 after_initialize do
   reloadable_patch do
     ApplicationHelper.class_eval do
-      [
-        :script_asset_path,
-        :discourse_stylesheet_preload_tag,
-        :discourse_stylesheet_link_tag,
-        :theme_lookup,
-        :theme_translations_lookup,
-        :theme_js_lookup,
-        :discourse_preload_color_scheme_stylesheets,
-        :discourse_color_scheme_stylesheets,
-        :client_side_setup_data
+      %i[
+        script_asset_path
+        discourse_stylesheet_preload_tag
+        discourse_stylesheet_link_tag
+        theme_lookup
+        theme_translations_lookup
+        theme_js_lookup
+        discourse_preload_color_scheme_stylesheets
+        discourse_color_scheme_stylesheets
+        client_side_setup_data
       ].each do |method_name|
         alias_method :"orig_#{method_name}", :"#{method_name}"
         define_method(method_name) do |*args, **kwargs|
@@ -99,9 +99,13 @@ after_initialize do
         additional_entries = []
         entries.each do |entry|
           if entry.include?(GlobalSetting.cdn_url)
-            CdnExperiment.app_cdn_urls[1..].each { |cdn_url| additional_entries << entry.gsub(GlobalSetting.cdn_url, cdn_url) }
+            CdnExperiment.app_cdn_urls[1..].each do |cdn_url|
+              additional_entries << entry.gsub(GlobalSetting.cdn_url, cdn_url)
+            end
           elsif entry.include?(GlobalSetting.s3_cdn_url)
-            CdnExperiment.s3_cdn_urls[1..].each { |s3_cdn_url| additional_entries << entry.gsub(GlobalSetting.s3_cdn_url, s3_cdn_url) }
+            CdnExperiment.s3_cdn_urls[1..].each do |s3_cdn_url|
+              additional_entries << entry.gsub(GlobalSetting.s3_cdn_url, s3_cdn_url)
+            end
           end
         end
         [*entries, *additional_entries]

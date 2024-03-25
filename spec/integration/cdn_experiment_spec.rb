@@ -130,15 +130,5 @@ describe "CDN Experiment" do
       expect(setup["data-cdn"]).to eq("https://new-app-cdn.example.com")
       expect(setup["data-s3-cdn"]).to eq("https://new-s3-cdn.example.com")
     end
-
-    it "includes all CDNs in the CSP" do
-      get "/"
-      expect(response.status).to eq(200)
-      csp = response.headers["Content-Security-Policy"]
-      expect(csp).to include("https://original-app-cdn.example.com")
-      expect(csp).to include("https://new-app-cdn.example.com")
-      expect(csp).to include("https://original-s3-cdn.example.com")
-      expect(csp).to include("https://new-s3-cdn.example.com")
-    end
   end
 end

@@ -69,48 +69,12 @@ module ::CdnExperiment
 end
 
 after_initialize do
-  reloadable_patch do
-    ApplicationHelper.class_eval do
-      %i[
-        script_asset_path
-        discourse_stylesheet_preload_tag
-        discourse_stylesheet_link_tag
-        theme_lookup
-        theme_translations_lookup
-        theme_js_lookup
-        discourse_preload_color_scheme_stylesheets
-        discourse_color_scheme_stylesheets
-        client_side_setup_data
-      ].each do |method_name|
-        alias_method :"orig_#{method_name}", :"#{method_name}"
-        define_method(method_name) do |*args, **kwargs|
-          result = send(:"orig_#{method_name}", *args, **kwargs)
-          return result if !SiteSetting.cdn_experiment_enabled
-          CdnExperiment.perform_gsub(result, request.env)
-        end
-      end
-    end
+  require_relative "lib/cdn_experiment/application_helper_extension"
+  require_relative "lib/cdn_experiment/content_security_policy_extension"
 
-    ContentSecurityPolicy::Default.class_eval do
-      alias_method :orig_script_assets, :script_assets
-      def script_assets(*args, **kwargs)
-        entries = orig_script_assets(*args, **kwargs)
-        return entries if !SiteSetting.cdn_experiment_enabled
-        additional_entries = []
-        entries.each do |entry|
-          if entry.include?(GlobalSetting.cdn_url)
-            CdnExperiment.app_cdn_urls[1..].each do |cdn_url|
-              additional_entries << entry.gsub(GlobalSetting.cdn_url, cdn_url)
-            end
-          elsif entry.include?(GlobalSetting.s3_cdn_url)
-            CdnExperiment.s3_cdn_urls[1..].each do |s3_cdn_url|
-              additional_entries << entry.gsub(GlobalSetting.s3_cdn_url, s3_cdn_url)
-            end
-          end
-        end
-        [*entries, *additional_entries]
-      end
-    end
+  reloadable_patch do
+    ApplicationHelper.prepend(CdnExperiment::ApplicationHelperExtension)
+    ContentSecurityPolicy::Default.prepend(CdnExperiment::ContentSecurityPolicyExtension)
   end
 
   register_anonymous_cache_key :cdnindex do
